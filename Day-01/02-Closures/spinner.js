@@ -39,4 +39,39 @@ function spinnerFactory(){
 		down : function(){ return --counter;}
 	}
 }
+var spinner = spinnerFactory();
+
+
+
+var spinner = (function(){
+	var counter = 0;
+	return {
+		up : function(){ return ++counter; },
+		down : function(){ return --counter; }
+	}
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
