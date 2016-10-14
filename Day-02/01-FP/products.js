@@ -87,9 +87,27 @@ describe('Sorting', function(){
 			sort(products, productComparerByValue);
 			console.table(products);
 		});
+	});
 
-		
-	})
+	/*
+	function sort(list, comparer){
+		var comparerFn = comparer;
+		if (typeof comparer === 'string'){
+			comparerFn = function(lhs, rhs){
+				if (lhs[comparer] > rhs[comparer]) return 1;
+				if (lhs[comparer] === rhs[comparer]) return 0;
+				return -1
+			};
+		}
+		for(var i=0; i < list.length-1; i++)
+			for(var j = i + 1; j < list.length; j++)
+				if ( comparerFn(list[i], list[j]) > 0){
+					var temp = list[i];
+					list[i] = list[j];
+					list[j] = temp;
+				}
+	}
+	*/
 	
 });
 
@@ -174,7 +192,93 @@ describe("Filtering", function(){
 });
 
 describe("All", function(){
-	
+	function all(list, criteriaFn){
+		for(var i=0; i < list.length; i++)
+			if (!criteriaFn(list[i]))
+				return false;
+		return true;
+	}
+	describe("Are all the items belong to category - 1 ?", function(){
+		var category1Criteria = function(product){
+			return product.category === 1;
+		};
+		var result = all(products, category1Criteria);
+		console.log(result);
+	});
+})
+
+describe("Any", function(){
+	function any(list, criteriaFn){
+		for(var i=0; i < list.length; i++)
+			if (criteriaFn(list[i]))
+				return true;
+		return false;
+	}
+	describe("Are they any items belong to category - 1 ?", function(){
+		var category1Criteria = function(product){
+			return product.category === 1;
+		};
+		var result = any(products, category1Criteria);
+		console.log(result);
+	});
+});
+
+describe("GroupBy", function(){
+	function groupBy(list, keySelectorFn){
+		var result = {};
+		for(var i=0; i < list.length; i++){
+			var key = keySelectorFn(list[i]);
+			/*if (typeof result[key] === 'undefined')
+				result[key] = [];*/
+			result[key] = result[key] || [];
+			result[key].push(list[i]);
+		}
+		return result;
+	}
+	function printGroup(groupedList){
+		for(var key in groupedList){
+			describe("Key - " + key, function(){
+				console.table(groupedList[key]);
+			})
+		}
+	}
+	describe("Products by category", function(){
+		var categoryKeySelector = function(product){
+			return product.category;
+		};
+		var productsByCategory = groupBy(products, categoryKeySelector);
+		printGroup(productsByCategory);
+	});
+
+	describe("Products by cost", function(){
+		var costKeySelector = function(product){
+			return product.cost <= 50 ? "affordable" : "costly";
+		};
+		var productsByCost = groupBy(products, costKeySelector);
+		printGroup(productsByCost);
+	});
+});
+
+describe("Transform", function(){
+	function transform(list, transformFn){
+		var result = [];
+		for(var i=0; i < list.length; i++)
+			result.push(transformFn(list[i]));
+		return result;
+	}
+
+	describe("Products list after 10% discount", function(){
+		var discountedProducts = transform(products, function(product){
+			return {
+				id : product.id,
+				name : product.name,
+				units : product.units,
+				cost : product.cost * 0.9,
+				category : product.category
+			};
+		});
+		console.table(discountedProducts);
+	})
 })
 
 
