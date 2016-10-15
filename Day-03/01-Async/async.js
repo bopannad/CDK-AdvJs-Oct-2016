@@ -61,11 +61,34 @@ var pgm = (function(){
 		});
 		return promise;
 	}
+	function defer(){
+		var deferred = {};
+		var promise = new Promise(function(resolve, reject){
+			deferred.resolve = resolve;
+			deferred.reject = reject;
+		});
+		deferred.promise = promise;
+		return deferred;
+	}
+
+	function addAsyncDeferred(x,y){
+		console.log('     [Service] processing ', x , ' and ', y);
+		var deferred = defer();
+
+		setTimeout(function(){
+			var result = x + y;
+			console.log('     [Service] returning result');
+			deferred.resolve(result);
+		}, 5000);
+
+		return deferred.promise;	
+	}
 
 	return {
 		addSyncClient : addSyncClient,
 		addAsyncCallbackClient : addAsyncCallbackClient,
 		addAsyncEvents : addAsyncEvents,
-		addAsyncPromise : addAsyncPromise
-	}
+		addAsyncPromise : addAsyncPromise,
+		addAsyncDeferred : addAsyncDeferred
+	};
 })()
